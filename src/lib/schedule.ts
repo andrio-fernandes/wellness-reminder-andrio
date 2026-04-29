@@ -4,6 +4,13 @@ export type Medicine = Database["public"]["Tables"]["medicines"]["Row"];
 export type DoseLog = Database["public"]["Tables"]["dose_logs"]["Row"];
 export type FrequencyType = Database["public"]["Enums"]["frequency_type"];
 export type DoseStatus = Database["public"]["Enums"]["dose_status"];
+export type MissedReason = Database["public"]["Enums"]["missed_reason"];
+
+export const MISSED_REASON_LABELS: Record<MissedReason, string> = {
+  forgot: "Forgot",
+  not_available: "Not available",
+  skipped: "Skipped intentionally",
+};
 
 export const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 

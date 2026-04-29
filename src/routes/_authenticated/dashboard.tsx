@@ -18,9 +18,19 @@ import {
   describeFrequency,
   formatTime,
   getScheduledTimesForDay,
+  MISSED_REASON_LABELS,
   type DoseLog,
   type Medicine,
+  type MissedReason,
 } from "@/lib/schedule";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -40,6 +50,7 @@ function Dashboard() {
   const [weekLogs, setWeekLogs] = useState<DoseLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [now, setNow] = useState(() => new Date());
+  const [missedSlot, setMissedSlot] = useState<SlotItem | null>(null);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 30_000);
@@ -217,6 +228,30 @@ function Dashboard() {
       );
     }
     toast.success(`${slot.medicine.name} marked as taken`);
+    load();
+  };
+
+  const markMissed = async (slot: SlotItem, reason: MissedReason) => {
+    if (!user) return;
+    if (slot.log) {
+      await supabase
+        .from("dose_logs")
+        .update({ status: "missed", missed_reason: reason, taken_at: null })
+        .eq("id", slot.log.id);
+    } else {
+      await supabase.from("dose_logs").upsert(
+        {
+          user_id: user.id,
+          medicine_id: slot.medicine.id,
+          scheduled_for: slot.scheduledFor.toISOString(),
+          status: "missed",
+          missed_reason: reason,
+        },
+        { onConflict: "user_id,medicine_id,scheduled_for" },
+      );
+    }
+    toast.success(`${slot.medicine.name} marked missed · ${MISSED_REASON_LABELS[reason]}`);
+    setMissedSlot(null);
     load();
   };
 
@@ -417,15 +452,37 @@ function Dashboard() {
                       Taken
                     </span>
                   ) : status === "missed" ? (
-                    <span className="rounded-full bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive">
-                      <AlertTriangle className="mr-1 inline h-3 w-3" />
-                      Missed
-                    </span>
+                    <div className="flex flex-wrap items-center justify-end gap-2">
+                      <span className="rounded-full bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive">
+                        <AlertTriangle className="mr-1 inline h-3 w-3" />
+                        Missed
+                        {slot.log?.missed_reason
+                          ? ` · ${MISSED_REASON_LABELS[slot.log.missed_reason]}`
+                          : ""}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 px-2 text-xs"
+                        onClick={() => setMissedSlot(slot)}
+                      >
+                        {slot.log?.missed_reason ? "Change reason" : "Add reason"}
+                      </Button>
+                    </div>
                   ) : (
-                    <Button size="sm" onClick={() => markTaken(slot)}>
-                      <Check className="mr-1 h-3 w-3" />
-                      Mark taken
-                    </Button>
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" onClick={() => markTaken(slot)}>
+                        <Check className="mr-1 h-3 w-3" />
+                        Mark taken
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setMissedSlot(slot)}
+                      >
+                        Mark missed
+                      </Button>
+                    </div>
                   )}
                 </li>
               );
@@ -469,6 +526,39 @@ function Dashboard() {
           </p>
         )}
       </section>
+
+      <Dialog open={!!missedSlot} onOpenChange={(o) => !o && setMissedSlot(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Why was this dose missed?</DialogTitle>
+            <DialogDescription>
+              {missedSlot
+                ? `${missedSlot.medicine.name} · ${formatTime(missedSlot.scheduledFor)}`
+                : ""}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-2 py-2">
+            {(Object.keys(MISSED_REASON_LABELS) as MissedReason[]).map((reason) => {
+              const isCurrent = missedSlot?.log?.missed_reason === reason;
+              return (
+                <Button
+                  key={reason}
+                  variant={isCurrent ? "default" : "outline"}
+                  className="justify-start"
+                  onClick={() => missedSlot && markMissed(missedSlot, reason)}
+                >
+                  {MISSED_REASON_LABELS[reason]}
+                </Button>
+              );
+            })}
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setMissedSlot(null)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

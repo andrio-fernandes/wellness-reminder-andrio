@@ -20,6 +20,7 @@ export type Database = {
           email_sent_at: string | null
           id: string
           medicine_id: string
+          missed_reason: Database["public"]["Enums"]["missed_reason"] | null
           scheduled_for: string
           status: Database["public"]["Enums"]["dose_status"]
           taken_at: string | null
@@ -30,6 +31,7 @@ export type Database = {
           email_sent_at?: string | null
           id?: string
           medicine_id: string
+          missed_reason?: Database["public"]["Enums"]["missed_reason"] | null
           scheduled_for: string
           status?: Database["public"]["Enums"]["dose_status"]
           taken_at?: string | null
@@ -40,6 +42,7 @@ export type Database = {
           email_sent_at?: string | null
           id?: string
           medicine_id?: string
+          missed_reason?: Database["public"]["Enums"]["missed_reason"] | null
           scheduled_for?: string
           status?: Database["public"]["Enums"]["dose_status"]
           taken_at?: string | null
@@ -131,6 +134,7 @@ export type Database = {
     Enums: {
       dose_status: "pending" | "taken" | "missed" | "snoozed"
       frequency_type: "daily" | "alternate" | "weekdays" | "interval"
+      missed_reason: "forgot" | "not_available" | "skipped"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -260,6 +264,7 @@ export const Constants = {
     Enums: {
       dose_status: ["pending", "taken", "missed", "snoozed"],
       frequency_type: ["daily", "alternate", "weekdays", "interval"],
+      missed_reason: ["forgot", "not_available", "skipped"],
     },
   },
 } as const
