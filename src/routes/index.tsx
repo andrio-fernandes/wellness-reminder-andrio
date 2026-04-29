@@ -14,37 +14,37 @@ export const Route = createFileRoute("/")({
 function Landing() {
   return (
     <div className="min-h-screen bg-background">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+      <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6 sm:py-5">
         <div className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
             <Pill className="h-5 w-5" />
           </div>
-          <span className="text-lg font-semibold">WellnessReminder</span>
+          <span className="text-base sm:text-lg font-semibold">WellnessReminder</span>
         </div>
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost">
+          <Button asChild variant="ghost" size="sm">
             <Link to="/login">Log in</Link>
           </Button>
-          <Button asChild>
+          <Button asChild size="sm">
             <Link to="/signup">Get started</Link>
           </Button>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6">
-        <section className="py-16 text-center md:py-24">
+      <main className="mx-auto max-w-6xl px-4 sm:px-6">
+        <section className="py-12 text-center sm:py-16 md:py-24">
           <span className="inline-flex items-center rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground">
             Your gentle medicine companion
           </span>
-          <h1 className="mt-6 text-4xl font-bold tracking-tight md:text-6xl">
+          <h1 className="mt-6 text-3xl sm:text-4xl font-bold tracking-tight md:text-6xl">
             Never miss a dose,<br />
             <span className="text-primary">stay on track with ease.</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-muted-foreground">
             WellnessReminder helps you manage every medicine, get timely reminders right in your browser
             (and email backup), and see your adherence improve week by week.
           </p>
-          <div className="mt-8 flex justify-center gap-3">
+          <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3">
             <Button asChild size="lg">
               <Link to="/signup">Start tracking — free</Link>
             </Button>
@@ -54,7 +54,7 @@ function Landing() {
           </div>
         </section>
 
-        <section className="grid gap-6 pb-20 md:grid-cols-3">
+        <section className="grid gap-6 pb-20 sm:grid-cols-2 md:grid-cols-3">
           {[
             {
               icon: Pill,
