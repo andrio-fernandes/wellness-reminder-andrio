@@ -169,16 +169,73 @@ function Dashboard() {
 
       {/* Stat cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Medicines" value={medicines.length} icon={Pill} tone="default" />
-        <StatCard label="Taken today" value={taken} icon={Check} tone="success" />
-        <StatCard label="Pending" value={pending} icon={Clock} tone="warning" />
+        <StatCard
+          label="Medicines added"
+          value={medicines.length}
+          icon={Pill}
+          tone="default"
+          hint={`${slots.length} dose${slots.length === 1 ? "" : "s"} today`}
+        />
+        <StatCard
+          label="Taken today"
+          value={taken}
+          icon={Check}
+          tone="success"
+          hint={`of ${slots.length} scheduled`}
+        />
+        <StatCard
+          label="Missed today"
+          value={missed}
+          icon={AlertTriangle}
+          tone="destructive"
+          hint={pending > 0 ? `${pending} still pending` : "All caught up"}
+        />
         <StatCard
           label="7-day adherence"
           value={`${weekAdherence}%`}
           icon={Activity}
           tone="lavender"
+          hint="Doses taken on time"
         />
       </div>
+
+      {/* Taken vs Missed comparison */}
+      <section className="rounded-3xl border bg-card p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">Today's progress</h2>
+            <p className="text-sm text-muted-foreground">
+              {taken} of {slots.length} doses taken
+            </p>
+          </div>
+          <span className="text-2xl font-bold tabular-nums">
+            {slots.length > 0 ? Math.round((taken / slots.length) * 100) : 0}%
+          </span>
+        </div>
+        <div className="flex h-3 w-full overflow-hidden rounded-full bg-secondary">
+          {slots.length > 0 ? (
+            <>
+              <div
+                className="bg-success transition-all"
+                style={{ width: `${(taken / slots.length) * 100}%` }}
+              />
+              <div
+                className="bg-destructive transition-all"
+                style={{ width: `${(missed / slots.length) * 100}%` }}
+              />
+              <div
+                className="bg-warning transition-all"
+                style={{ width: `${(pending / slots.length) * 100}%` }}
+              />
+            </>
+          ) : null}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
+          <LegendDot tone="success" label={`Taken · ${taken}`} />
+          <LegendDot tone="destructive" label={`Missed · ${missed}`} />
+          <LegendDot tone="warning" label={`Pending · ${pending}`} />
+        </div>
+      </section>
 
       {/* Today's schedule */}
       <section className="rounded-3xl border bg-card p-6 shadow-sm">
