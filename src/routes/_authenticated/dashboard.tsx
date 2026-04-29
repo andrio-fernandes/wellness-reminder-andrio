@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
-import { Pill, Plus, Check, AlertTriangle, Clock, Activity } from "lucide-react";
+import { Pill, Plus, Check, AlertTriangle, Activity } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -169,16 +169,73 @@ function Dashboard() {
 
       {/* Stat cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Medicines" value={medicines.length} icon={Pill} tone="default" />
-        <StatCard label="Taken today" value={taken} icon={Check} tone="success" />
-        <StatCard label="Pending" value={pending} icon={Clock} tone="warning" />
+        <StatCard
+          label="Medicines added"
+          value={medicines.length}
+          icon={Pill}
+          tone="default"
+          hint={`${slots.length} dose${slots.length === 1 ? "" : "s"} today`}
+        />
+        <StatCard
+          label="Taken today"
+          value={taken}
+          icon={Check}
+          tone="success"
+          hint={`of ${slots.length} scheduled`}
+        />
+        <StatCard
+          label="Missed today"
+          value={missed}
+          icon={AlertTriangle}
+          tone="destructive"
+          hint={pending > 0 ? `${pending} still pending` : "All caught up"}
+        />
         <StatCard
           label="7-day adherence"
           value={`${weekAdherence}%`}
           icon={Activity}
           tone="lavender"
+          hint="Doses taken on time"
         />
       </div>
+
+      {/* Taken vs Missed comparison */}
+      <section className="rounded-3xl border bg-card p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">Today's progress</h2>
+            <p className="text-sm text-muted-foreground">
+              {taken} of {slots.length} doses taken
+            </p>
+          </div>
+          <span className="text-2xl font-bold tabular-nums">
+            {slots.length > 0 ? Math.round((taken / slots.length) * 100) : 0}%
+          </span>
+        </div>
+        <div className="flex h-3 w-full overflow-hidden rounded-full bg-secondary">
+          {slots.length > 0 ? (
+            <>
+              <div
+                className="bg-success transition-all"
+                style={{ width: `${(taken / slots.length) * 100}%` }}
+              />
+              <div
+                className="bg-destructive transition-all"
+                style={{ width: `${(missed / slots.length) * 100}%` }}
+              />
+              <div
+                className="bg-warning transition-all"
+                style={{ width: `${(pending / slots.length) * 100}%` }}
+              />
+            </>
+          ) : null}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
+          <LegendDot tone="success" label={`Taken · ${taken}`} />
+          <LegendDot tone="destructive" label={`Missed · ${missed}`} />
+          <LegendDot tone="warning" label={`Pending · ${pending}`} />
+        </div>
+      </section>
 
       {/* Today's schedule */}
       <section className="rounded-3xl border bg-card p-6 shadow-sm">
@@ -292,31 +349,36 @@ function StatCard({
   value,
   icon: Icon,
   tone,
+  hint,
 }: {
   label: string;
   value: number | string;
   icon: typeof Pill;
-  tone: "default" | "success" | "warning" | "lavender";
+  tone: "default" | "success" | "warning" | "lavender" | "destructive";
+  hint?: string;
 }) {
   const toneClass =
     tone === "success"
       ? "bg-success/15 text-success"
       : tone === "warning"
         ? "bg-warning/20 text-warning-foreground"
-        : tone === "lavender"
-          ? "bg-lavender/30 text-lavender-foreground"
-          : "bg-secondary text-primary";
+        : tone === "destructive"
+          ? "bg-destructive/15 text-destructive"
+          : tone === "lavender"
+            ? "bg-lavender/30 text-lavender-foreground"
+            : "bg-secondary text-primary";
   return (
     <div className="rounded-3xl border bg-card p-5 shadow-sm">
       <div className="flex items-center gap-3">
         <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${toneClass}`}>
           <Icon className="h-5 w-5" />
         </div>
-        <div>
+        <div className="min-w-0">
           <div className="text-xs text-muted-foreground">{label}</div>
           <div className="text-2xl font-bold">{value}</div>
         </div>
       </div>
+      {hint && <div className="mt-2 text-xs text-muted-foreground">{hint}</div>}
     </div>
   );
 }
@@ -325,4 +387,15 @@ function StatusDot({ tone }: { tone: "success" | "warning" | "destructive" }) {
   const cls =
     tone === "success" ? "bg-success" : tone === "destructive" ? "bg-destructive" : "bg-warning";
   return <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${cls}`} aria-hidden />;
+}
+
+function LegendDot({ tone, label }: { tone: "success" | "warning" | "destructive"; label: string }) {
+  const cls =
+    tone === "success" ? "bg-success" : tone === "destructive" ? "bg-destructive" : "bg-warning";
+  return (
+    <span className="flex items-center gap-1.5">
+      <span className={`h-2.5 w-2.5 rounded-full ${cls}`} aria-hidden />
+      {label}
+    </span>
+  );
 }
