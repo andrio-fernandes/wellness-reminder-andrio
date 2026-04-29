@@ -39,6 +39,12 @@ function Dashboard() {
   const [todayLogs, setTodayLogs] = useState<DoseLog[]>([]);
   const [weekLogs, setWeekLogs] = useState<DoseLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 30_000);
+    return () => clearInterval(id);
+  }, []);
 
   const load = useCallback(async () => {
     if (!user) return;
