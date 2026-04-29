@@ -203,13 +203,18 @@ function Dashboard() {
         .update({ status: "taken", taken_at: new Date().toISOString() })
         .eq("id", slot.log.id);
     } else {
-      await supabase.from("dose_logs").insert({
-        user_id: user.id,
-        medicine_id: slot.medicine.id,
-        scheduled_for: slot.scheduledFor.toISOString(),
-        status: "taken",
-        taken_at: new Date().toISOString(),
-      });
+      // Upsert against the unique (user_id, medicine_id, scheduled_for) constraint
+      // so concurrent inserts (e.g. notification scheduler) don't create duplicates.
+      await supabase.from("dose_logs").upsert(
+        {
+          user_id: user.id,
+          medicine_id: slot.medicine.id,
+          scheduled_for: slot.scheduledFor.toISOString(),
+          status: "taken",
+          taken_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id,medicine_id,scheduled_for" },
+      );
     }
     toast.success(`${slot.medicine.name} marked as taken`);
     load();
