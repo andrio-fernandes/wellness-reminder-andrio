@@ -231,6 +231,30 @@ function Dashboard() {
     load();
   };
 
+  const markMissed = async (slot: SlotItem, reason: MissedReason) => {
+    if (!user) return;
+    if (slot.log) {
+      await supabase
+        .from("dose_logs")
+        .update({ status: "missed", missed_reason: reason, taken_at: null })
+        .eq("id", slot.log.id);
+    } else {
+      await supabase.from("dose_logs").upsert(
+        {
+          user_id: user.id,
+          medicine_id: slot.medicine.id,
+          scheduled_for: slot.scheduledFor.toISOString(),
+          status: "missed",
+          missed_reason: reason,
+        },
+        { onConflict: "user_id,medicine_id,scheduled_for" },
+      );
+    }
+    toast.success(`${slot.medicine.name} marked missed · ${MISSED_REASON_LABELS[reason]}`);
+    setMissedSlot(null);
+    load();
+  };
+
   if (loading) {
     return <div className="text-center text-muted-foreground">Loading...</div>;
   }
