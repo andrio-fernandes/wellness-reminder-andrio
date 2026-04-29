@@ -112,14 +112,14 @@ function MedicinesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Medicines</h1>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Medicines</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Manage your medicines and reminder schedules.
           </p>
         </div>
-        <Button onClick={openNew}>
+        <Button onClick={openNew} className="shrink-0">
           <Plus className="mr-1 h-4 w-4" />
           Add medicine
         </Button>

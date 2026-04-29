@@ -69,7 +69,7 @@ function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Settings</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Manage notifications and your account.
         </p>
@@ -79,7 +79,7 @@ function SettingsPage() {
         <div className="text-muted-foreground">Loading...</div>
       ) : (
         <>
-          <section className="rounded-3xl border bg-card p-6 shadow-sm">
+          <section className="rounded-3xl border bg-card p-4 sm:p-6 shadow-sm">
             <div className="flex items-start gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-secondary text-primary">
                 <Bell className="h-5 w-5" />
@@ -108,17 +108,17 @@ function SettingsPage() {
             </div>
           </section>
 
-          <section className="rounded-3xl border bg-card p-6 shadow-sm">
+          <section className="rounded-3xl border bg-card p-4 sm:p-6 shadow-sm">
             <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-lavender/30 text-lavender-foreground">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-lavender/30 text-lavender-foreground">
                 <Mail className="h-5 w-5" />
               </div>
-              <div className="flex-1">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <h2 className="font-semibold">Email reminders</h2>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Backup reminder sent to {user?.email} when a dose is due. Helpful when
+                      Backup reminder sent to <span className="break-all">{user?.email}</span> when a dose is due. Helpful when
                       your browser is closed.
                     </p>
                   </div>
@@ -128,9 +128,9 @@ function SettingsPage() {
             </div>
           </section>
 
-          <section className="rounded-3xl border bg-card p-6 shadow-sm">
+          <section className="rounded-3xl border bg-card p-4 sm:p-6 shadow-sm">
             <h2 className="font-semibold">Account</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{user?.email}</p>
+            <p className="mt-1 break-all text-sm text-muted-foreground">{user?.email}</p>
             <div className="mt-4">
               <Button variant="outline" onClick={handleSignOut}>
                 <LogOut className="mr-2 h-4 w-4" />
