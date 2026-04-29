@@ -46,6 +46,8 @@ function Dashboard() {
     return () => clearInterval(id);
   }, []);
 
+  const [upcomingLogs, setUpcomingLogs] = useState<DoseLog[]>([]);
+
   const load = useCallback(async () => {
     if (!user) return;
     const today = new Date();
@@ -54,8 +56,10 @@ function Dashboard() {
     tomorrow.setDate(tomorrow.getDate() + 1);
     const weekAgo = new Date(today);
     weekAgo.setDate(weekAgo.getDate() - 6);
+    const weekAhead = new Date(today);
+    weekAhead.setDate(weekAhead.getDate() + 8);
 
-    const [{ data: meds }, { data: tLogs }, { data: wLogs }] = await Promise.all([
+    const [{ data: meds }, { data: tLogs }, { data: wLogs }, { data: uLogs }] = await Promise.all([
       supabase.from("medicines").select("*").eq("user_id", user.id).order("created_at"),
       supabase
         .from("dose_logs")
@@ -69,11 +73,18 @@ function Dashboard() {
         .eq("user_id", user.id)
         .gte("scheduled_for", weekAgo.toISOString())
         .lt("scheduled_for", tomorrow.toISOString()),
+      supabase
+        .from("dose_logs")
+        .select("*")
+        .eq("user_id", user.id)
+        .gte("scheduled_for", today.toISOString())
+        .lt("scheduled_for", weekAhead.toISOString()),
     ]);
 
     setMedicines((meds ?? []) as Medicine[]);
     setTodayLogs((tLogs ?? []) as DoseLog[]);
     setWeekLogs((wLogs ?? []) as DoseLog[]);
+    setUpcomingLogs((uLogs ?? []) as DoseLog[]);
     setLoading(false);
   }, [user]);
 
