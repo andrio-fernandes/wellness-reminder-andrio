@@ -358,6 +358,12 @@ function Dashboard() {
             </div>
           )}
         </div>
+        <div className="mt-4 flex justify-end border-t pt-3">
+          <Button size="sm" variant="outline" onClick={sendTestNotification}>
+            <Bell className="mr-1.5 h-4 w-4" />
+            Test notification
+          </Button>
+        </div>
       </section>
 
       {/* Taken vs Missed comparison */}
