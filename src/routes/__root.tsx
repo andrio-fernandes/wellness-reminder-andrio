@@ -31,13 +31,13 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "PillPal — Smart Medicine Reminder & Health Tracker" },
+      { title: "WellnessReminder — Smart Medicine Reminder & Health Tracker" },
       {
         name: "description",
         content:
           "Never miss a dose. Track medicines, get gentle reminders, and watch your adherence improve.",
       },
-      { property: "og:title", content: "PillPal — Smart Medicine Reminder" },
+      { property: "og:title", content: "WellnessReminder — Smart Medicine Reminder" },
       {
         property: "og:description",
         content: "Track medicines, schedule reminders, and improve your health adherence.",

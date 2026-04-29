@@ -35,7 +35,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <Pill className="h-4 w-4" />
           </div>
-          <span className="font-semibold">PillPal</span>
+          <span className="font-semibold">WellnessReminder</span>
         </Link>
         <Button variant="ghost" size="icon" onClick={() => setOpen((o) => !o)}>
           <Menu className="h-5 w-5" />
@@ -54,7 +54,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
               <Pill className="h-5 w-5" />
             </div>
-            <span className="text-lg font-semibold">PillPal</span>
+            <span className="text-lg font-semibold">WellnessReminder</span>
           </Link>
 
           <nav className="flex flex-col gap-1">

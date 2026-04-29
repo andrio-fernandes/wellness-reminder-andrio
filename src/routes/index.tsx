@@ -19,7 +19,7 @@ function Landing() {
           <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
             <Pill className="h-5 w-5" />
           </div>
-          <span className="text-lg font-semibold">PillPal</span>
+          <span className="text-lg font-semibold">WellnessReminder</span>
         </div>
         <div className="flex items-center gap-2">
           <Button asChild variant="ghost">
@@ -41,7 +41,7 @@ function Landing() {
             <span className="text-primary">stay on track with ease.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            PillPal helps you manage every medicine, get timely reminders right in your browser
+            WellnessReminder helps you manage every medicine, get timely reminders right in your browser
             (and email backup), and see your adherence improve week by week.
           </p>
           <div className="mt-8 flex justify-center gap-3">

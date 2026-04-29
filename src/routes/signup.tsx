@@ -44,7 +44,7 @@ function SignupPage() {
       toast.error(error.message);
       return;
     }
-    toast.success("Account created! Welcome to PillPal.");
+    toast.success("Account created! Welcome to WellnessReminder.");
     navigate({ to: "/dashboard" });
   };
 
