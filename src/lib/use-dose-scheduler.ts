@@ -65,7 +65,9 @@ export function useDoseScheduler() {
           if (Math.abs(slotTs - now) > TRIGGER_WINDOW_MS) continue;
           if (firedRef.current.has(dedupeKey) && !snoozeUntil) continue;
 
-          // Insert (or fetch existing) dose log row
+          // Insert (or fetch existing) dose log row.
+          // Backend has a UNIQUE(user_id, medicine_id, scheduled_for) constraint
+          // that prevents duplicate slots even under concurrent inserts.
           const { data: existing } = await supabase
             .from("dose_logs")
             .select("id, status")
@@ -73,22 +75,48 @@ export function useDoseScheduler() {
             .eq("scheduled_for", slot.toISOString())
             .maybeSingle();
 
-          let doseLogId = existing?.id ?? null;
-          if (!existing) {
-            const { data: inserted } = await supabase
-              .from("dose_logs")
-              .insert({
-                user_id: user.id,
-                medicine_id: med.id,
-                scheduled_for: slot.toISOString(),
-                status: "pending",
-              })
-              .select("id")
-              .single();
-            doseLogId = inserted?.id ?? null;
-          } else if (existing.status === "taken") {
+          if (existing && (existing.status === "taken" || existing.status === "missed")) {
+            // Already resolved for this slot — never re-notify.
             firedRef.current.add(dedupeKey);
             continue;
+          }
+
+          let doseLogId = existing?.id ?? null;
+          if (!doseLogId) {
+            // Use upsert with ignoreDuplicates so a concurrent insert from
+            // another tab/device doesn't throw — we just re-read the row.
+            const { data: inserted } = await supabase
+              .from("dose_logs")
+              .upsert(
+                {
+                  user_id: user.id,
+                  medicine_id: med.id,
+                  scheduled_for: slot.toISOString(),
+                  status: "pending",
+                },
+                {
+                  onConflict: "user_id,medicine_id,scheduled_for",
+                  ignoreDuplicates: true,
+                },
+              )
+              .select("id")
+              .maybeSingle();
+            doseLogId = inserted?.id ?? null;
+
+            if (!doseLogId) {
+              // Row already existed (conflict ignored) — fetch it.
+              const { data: refetched } = await supabase
+                .from("dose_logs")
+                .select("id, status")
+                .eq("medicine_id", med.id)
+                .eq("scheduled_for", slot.toISOString())
+                .maybeSingle();
+              if (refetched && (refetched.status === "taken" || refetched.status === "missed")) {
+                firedRef.current.add(dedupeKey);
+                continue;
+              }
+              doseLogId = refetched?.id ?? null;
+            }
           }
 
           if (!doseLogId) continue;
