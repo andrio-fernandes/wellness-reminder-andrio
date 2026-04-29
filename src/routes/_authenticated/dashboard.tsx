@@ -226,8 +226,10 @@ function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+      <div className="animate-rise-in">
+        <h1 className="text-4xl font-bold tracking-tight text-gradient-primary">
+          Dashboard
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {new Date().toLocaleDateString([], {
             weekday: "long",
@@ -239,34 +241,44 @@ function Dashboard() {
 
       {/* Stat cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          label="Medicines added"
-          value={medicines.length}
-          icon={Pill}
-          tone="default"
-          hint={`${slots.length} dose${slots.length === 1 ? "" : "s"} today`}
-        />
-        <StatCard
-          label="Taken today"
-          value={taken}
-          icon={Check}
-          tone="success"
-          hint={`of ${slots.length} scheduled`}
-        />
-        <StatCard
-          label="Missed today"
-          value={missed}
-          icon={AlertTriangle}
-          tone="destructive"
-          hint={pending > 0 ? `${pending} still pending` : "All caught up"}
-        />
-        <StatCard
-          label="7-day adherence"
-          value={`${weekAdherence}%`}
-          icon={Activity}
-          tone="lavender"
-          hint="Doses taken on time"
-        />
+        {[
+          {
+            label: "Medicines added",
+            value: medicines.length,
+            icon: Pill,
+            tone: "default" as const,
+            hint: `${slots.length} dose${slots.length === 1 ? "" : "s"} today`,
+          },
+          {
+            label: "Taken today",
+            value: taken,
+            icon: Check,
+            tone: "success" as const,
+            hint: `of ${slots.length} scheduled`,
+          },
+          {
+            label: "Missed today",
+            value: missed,
+            icon: AlertTriangle,
+            tone: "destructive" as const,
+            hint: pending > 0 ? `${pending} still pending` : "All caught up",
+          },
+          {
+            label: "7-day adherence",
+            value: `${weekAdherence}%`,
+            icon: Activity,
+            tone: "lavender" as const,
+            hint: "Doses taken on time",
+          },
+        ].map((c, i) => (
+          <div
+            key={c.label}
+            className="animate-rise-in"
+            style={{ animationDelay: `${i * 70}ms` }}
+          >
+            <StatCard {...c} />
+          </div>
+        ))}
       </div>
 
       {/* Next upcoming dose */}
