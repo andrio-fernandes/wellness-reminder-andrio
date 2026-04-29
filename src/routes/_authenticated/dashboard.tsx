@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
-import { Pill, Plus, Check, AlertTriangle, Activity } from "lucide-react";
+import { Pill, Plus, Check, AlertTriangle, Activity, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +39,12 @@ function Dashboard() {
   const [todayLogs, setTodayLogs] = useState<DoseLog[]>([]);
   const [weekLogs, setWeekLogs] = useState<DoseLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 30_000);
+    return () => clearInterval(id);
+  }, []);
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -98,6 +104,53 @@ function Dashboard() {
   const taken = slots.filter((s) => s.log?.status === "taken").length;
   const missed = slots.filter((s) => s.log?.status === "missed").length;
   const pending = slots.length - taken - missed;
+
+  // Next upcoming dose across all medicines (look up to 7 days ahead)
+  let nextSlot: { medicine: Medicine; scheduledFor: Date } | null = null;
+  outer: for (let i = 0; i < 7; i++) {
+    const day = new Date(now);
+    day.setHours(0, 0, 0, 0);
+    day.setDate(day.getDate() + i);
+    const candidates = medicines
+      .flatMap((med) =>
+        getScheduledTimesForDay(med, day).map((scheduledFor) => ({ medicine: med, scheduledFor })),
+      )
+      .filter(({ medicine, scheduledFor }) => {
+        if (scheduledFor.getTime() <= now.getTime()) return false;
+        if (i === 0) {
+          const log = todayLogs.find(
+            (l) =>
+              l.medicine_id === medicine.id &&
+              new Date(l.scheduled_for).getTime() === scheduledFor.getTime(),
+          );
+          if (log?.status === "taken") return false;
+        }
+        return true;
+      })
+      .sort((a, b) => a.scheduledFor.getTime() - b.scheduledFor.getTime());
+    if (candidates.length > 0) {
+      nextSlot = candidates[0];
+      break outer;
+    }
+  }
+
+  const nextMinutes = nextSlot
+    ? Math.max(0, Math.round((nextSlot.scheduledFor.getTime() - now.getTime()) / 60000))
+    : null;
+  const isToday =
+    nextSlot &&
+    nextSlot.scheduledFor.toDateString() === now.toDateString();
+
+  function formatCountdown(mins: number): string {
+    if (mins < 1) return "Due now";
+    if (mins < 60) return `in ${mins} min`;
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    if (h < 24) return m === 0 ? `in ${h} h` : `in ${h} h ${m} min`;
+    const d = Math.floor(h / 24);
+    const rh = h % 24;
+    return rh === 0 ? `in ${d} d` : `in ${d} d ${rh} h`;
+  }
 
   // Weekly adherence chart
   const weekData = Array.from({ length: 7 }).map((_, i) => {
@@ -198,6 +251,48 @@ function Dashboard() {
           hint="Doses taken on time"
         />
       </div>
+
+      {/* Next upcoming dose */}
+      <section className="rounded-3xl border bg-gradient-to-br from-lavender/40 via-card to-card p-6 shadow-sm">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+            <Clock className="h-7 w-7" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Next dose
+            </div>
+            {nextSlot && nextMinutes !== null ? (
+              <>
+                <div className="mt-0.5 truncate text-xl font-semibold">
+                  {nextSlot.medicine.name}
+                  <span className="ml-2 text-sm font-normal text-muted-foreground">
+                    {nextSlot.medicine.dosage}
+                  </span>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {isToday ? "Today" : nextSlot.scheduledFor.toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" })}{" "}
+                  at {formatTime(nextSlot.scheduledFor)}
+                </div>
+              </>
+            ) : (
+              <div className="mt-0.5 text-base font-medium text-muted-foreground">
+                No upcoming doses scheduled
+              </div>
+            )}
+          </div>
+          {nextSlot && nextMinutes !== null && (
+            <div className="text-right">
+              <div className="text-2xl font-bold tabular-nums text-primary">
+                {formatCountdown(nextMinutes)}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {nextMinutes < 1 ? "It's time" : `${nextMinutes} minute${nextMinutes === 1 ? "" : "s"} away`}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Taken vs Missed comparison */}
       <section className="rounded-3xl border bg-card p-6 shadow-sm">
