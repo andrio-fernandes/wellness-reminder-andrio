@@ -53,7 +53,7 @@ function LoginPage() {
             <Pill className="h-6 w-6" />
           </div>
           <h1 className="mt-4 text-2xl font-bold">Welcome back</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Log in to your PillPal account</p>
+          <p className="mt-1 text-sm text-muted-foreground">Log in to your WellnessReminder account</p>
         </div>
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-2">
