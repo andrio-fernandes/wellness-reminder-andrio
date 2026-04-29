@@ -18,9 +18,19 @@ import {
   describeFrequency,
   formatTime,
   getScheduledTimesForDay,
+  MISSED_REASON_LABELS,
   type DoseLog,
   type Medicine,
+  type MissedReason,
 } from "@/lib/schedule";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -40,6 +50,7 @@ function Dashboard() {
   const [weekLogs, setWeekLogs] = useState<DoseLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [now, setNow] = useState(() => new Date());
+  const [missedSlot, setMissedSlot] = useState<SlotItem | null>(null);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 30_000);
