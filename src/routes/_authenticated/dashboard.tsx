@@ -328,7 +328,7 @@ function Dashboard() {
       </section>
 
       {/* Taken vs Missed comparison */}
-      <section className="rounded-3xl border bg-card p-6 shadow-sm">
+      <section className="card-hover rounded-3xl border bg-card p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold">Today's progress</h2>
@@ -366,7 +366,7 @@ function Dashboard() {
       </section>
 
       {/* Today's schedule */}
-      <section className="rounded-3xl border bg-card p-6 shadow-sm">
+      <section className="card-hover rounded-3xl border bg-card p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Today's schedule</h2>
           <Button asChild size="sm" variant="outline">
@@ -434,7 +434,7 @@ function Dashboard() {
       </section>
 
       {/* Weekly adherence chart */}
-      <section className="rounded-3xl border bg-card p-6 shadow-sm">
+      <section className="card-hover rounded-3xl border bg-card p-6 shadow-sm">
         <h2 className="mb-1 text-xl font-semibold">Weekly adherence</h2>
         <p className="mb-4 text-sm text-muted-foreground">
           Doses taken on time over the last 7 days.
@@ -496,7 +496,7 @@ function StatCard({
             ? "bg-lavender/30 text-lavender-foreground"
             : "bg-secondary text-primary";
   return (
-    <div className="rounded-3xl border bg-card p-5 shadow-sm">
+    <div className="card-hover rounded-3xl border bg-card p-5 shadow-sm">
       <div className="flex items-center gap-3">
         <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${toneClass}`}>
           <Icon className="h-5 w-5" />
