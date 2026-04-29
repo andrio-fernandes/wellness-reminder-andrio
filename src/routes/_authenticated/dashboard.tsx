@@ -226,8 +226,10 @@ function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+      <div className="animate-rise-in">
+        <h1 className="text-4xl font-bold tracking-tight text-gradient-primary">
+          Dashboard
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {new Date().toLocaleDateString([], {
             weekday: "long",
@@ -239,40 +241,54 @@ function Dashboard() {
 
       {/* Stat cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          label="Medicines added"
-          value={medicines.length}
-          icon={Pill}
-          tone="default"
-          hint={`${slots.length} dose${slots.length === 1 ? "" : "s"} today`}
-        />
-        <StatCard
-          label="Taken today"
-          value={taken}
-          icon={Check}
-          tone="success"
-          hint={`of ${slots.length} scheduled`}
-        />
-        <StatCard
-          label="Missed today"
-          value={missed}
-          icon={AlertTriangle}
-          tone="destructive"
-          hint={pending > 0 ? `${pending} still pending` : "All caught up"}
-        />
-        <StatCard
-          label="7-day adherence"
-          value={`${weekAdherence}%`}
-          icon={Activity}
-          tone="lavender"
-          hint="Doses taken on time"
-        />
+        {[
+          {
+            label: "Medicines added",
+            value: medicines.length,
+            icon: Pill,
+            tone: "default" as const,
+            hint: `${slots.length} dose${slots.length === 1 ? "" : "s"} today`,
+          },
+          {
+            label: "Taken today",
+            value: taken,
+            icon: Check,
+            tone: "success" as const,
+            hint: `of ${slots.length} scheduled`,
+          },
+          {
+            label: "Missed today",
+            value: missed,
+            icon: AlertTriangle,
+            tone: "destructive" as const,
+            hint: pending > 0 ? `${pending} still pending` : "All caught up",
+          },
+          {
+            label: "7-day adherence",
+            value: `${weekAdherence}%`,
+            icon: Activity,
+            tone: "lavender" as const,
+            hint: "Doses taken on time",
+          },
+        ].map((c, i) => (
+          <div
+            key={c.label}
+            className="animate-rise-in"
+            style={{ animationDelay: `${i * 70}ms` }}
+          >
+            <StatCard {...c} />
+          </div>
+        ))}
       </div>
 
       {/* Next upcoming dose */}
-      <section className="rounded-3xl border bg-gradient-to-br from-lavender/40 via-card to-card p-6 shadow-sm">
+      <section className="card-hover animate-rise-in rounded-3xl border bg-gradient-to-br from-lavender/40 via-card to-card p-6 shadow-sm">
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+          <div
+            className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary ${
+              nextMinutes !== null && nextMinutes <= 5 ? "animate-pulse-ring" : "animate-float-slow"
+            }`}
+          >
             <Clock className="h-7 w-7" />
           </div>
           <div className="min-w-0 flex-1">
@@ -312,7 +328,7 @@ function Dashboard() {
       </section>
 
       {/* Taken vs Missed comparison */}
-      <section className="rounded-3xl border bg-card p-6 shadow-sm">
+      <section className="card-hover rounded-3xl border bg-card p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold">Today's progress</h2>
@@ -350,7 +366,7 @@ function Dashboard() {
       </section>
 
       {/* Today's schedule */}
-      <section className="rounded-3xl border bg-card p-6 shadow-sm">
+      <section className="card-hover rounded-3xl border bg-card p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Today's schedule</h2>
           <Button asChild size="sm" variant="outline">
@@ -418,7 +434,7 @@ function Dashboard() {
       </section>
 
       {/* Weekly adherence chart */}
-      <section className="rounded-3xl border bg-card p-6 shadow-sm">
+      <section className="card-hover rounded-3xl border bg-card p-6 shadow-sm">
         <h2 className="mb-1 text-xl font-semibold">Weekly adherence</h2>
         <p className="mb-4 text-sm text-muted-foreground">
           Doses taken on time over the last 7 days.
@@ -480,7 +496,7 @@ function StatCard({
             ? "bg-lavender/30 text-lavender-foreground"
             : "bg-secondary text-primary";
   return (
-    <div className="rounded-3xl border bg-card p-5 shadow-sm">
+    <div className="card-hover rounded-3xl border bg-card p-5 shadow-sm">
       <div className="flex items-center gap-3">
         <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${toneClass}`}>
           <Icon className="h-5 w-5" />
