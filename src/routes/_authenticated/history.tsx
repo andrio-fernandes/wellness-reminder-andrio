@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Check, Clock, AlertTriangle, History as HistoryIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
-import { formatDate, formatTime, type DoseLog, type Medicine } from "@/lib/schedule";
+import { formatDate, formatTime, MISSED_REASON_LABELS, type DoseLog, type Medicine } from "@/lib/schedule";
 
 export const Route = createFileRoute("/_authenticated/history")({
   component: HistoryPage,
@@ -110,6 +110,9 @@ function HistoryPage() {
                           <div className="text-xs text-muted-foreground">
                             {medicine?.dosage} · scheduled {formatTime(log.scheduled_for)}
                             {log.taken_at && ` · taken ${formatTime(log.taken_at)}`}
+                            {log.status === "missed" && log.missed_reason
+                              ? ` · ${MISSED_REASON_LABELS[log.missed_reason]}`
+                              : ""}
                           </div>
                         </div>
                         <span className="text-xs font-medium capitalize text-muted-foreground">
