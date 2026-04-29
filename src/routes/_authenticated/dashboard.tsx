@@ -282,9 +282,13 @@ function Dashboard() {
       </div>
 
       {/* Next upcoming dose */}
-      <section className="rounded-3xl border bg-gradient-to-br from-lavender/40 via-card to-card p-6 shadow-sm">
+      <section className="card-hover animate-rise-in rounded-3xl border bg-gradient-to-br from-lavender/40 via-card to-card p-6 shadow-sm">
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+          <div
+            className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary ${
+              nextMinutes !== null && nextMinutes <= 5 ? "animate-pulse-ring" : "animate-float-slow"
+            }`}
+          >
             <Clock className="h-7 w-7" />
           </div>
           <div className="min-w-0 flex-1">
