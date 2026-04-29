@@ -128,13 +128,14 @@ function Dashboard() {
       )
       .filter(({ medicine, scheduledFor }) => {
         if (scheduledFor.getTime() <= now.getTime()) return false;
-        if (i === 0) {
-          const log = todayLogs.find(
-            (l) =>
-              l.medicine_id === medicine.id &&
-              new Date(l.scheduled_for).getTime() === scheduledFor.getTime(),
-          );
-          if (log?.status === "taken") return false;
+        const log = upcomingLogs.find(
+          (l) =>
+            l.medicine_id === medicine.id &&
+            new Date(l.scheduled_for).getTime() === scheduledFor.getTime(),
+        );
+        // Skip slots already resolved or deferred for this exact scheduled time
+        if (log?.status === "taken" || log?.status === "snoozed" || log?.status === "missed") {
+          return false;
         }
         return true;
       })
