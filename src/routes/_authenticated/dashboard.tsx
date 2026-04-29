@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
-import { Pill, Plus, Check, AlertTriangle, Clock, Activity } from "lucide-react";
+import { Pill, Plus, Check, AlertTriangle, Activity } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
