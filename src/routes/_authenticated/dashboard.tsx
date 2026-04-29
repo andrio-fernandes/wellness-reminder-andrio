@@ -349,31 +349,36 @@ function StatCard({
   value,
   icon: Icon,
   tone,
+  hint,
 }: {
   label: string;
   value: number | string;
   icon: typeof Pill;
-  tone: "default" | "success" | "warning" | "lavender";
+  tone: "default" | "success" | "warning" | "lavender" | "destructive";
+  hint?: string;
 }) {
   const toneClass =
     tone === "success"
       ? "bg-success/15 text-success"
       : tone === "warning"
         ? "bg-warning/20 text-warning-foreground"
-        : tone === "lavender"
-          ? "bg-lavender/30 text-lavender-foreground"
-          : "bg-secondary text-primary";
+        : tone === "destructive"
+          ? "bg-destructive/15 text-destructive"
+          : tone === "lavender"
+            ? "bg-lavender/30 text-lavender-foreground"
+            : "bg-secondary text-primary";
   return (
     <div className="rounded-3xl border bg-card p-5 shadow-sm">
       <div className="flex items-center gap-3">
         <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${toneClass}`}>
           <Icon className="h-5 w-5" />
         </div>
-        <div>
+        <div className="min-w-0">
           <div className="text-xs text-muted-foreground">{label}</div>
           <div className="text-2xl font-bold">{value}</div>
         </div>
       </div>
+      {hint && <div className="mt-2 text-xs text-muted-foreground">{hint}</div>}
     </div>
   );
 }
@@ -382,4 +387,15 @@ function StatusDot({ tone }: { tone: "success" | "warning" | "destructive" }) {
   const cls =
     tone === "success" ? "bg-success" : tone === "destructive" ? "bg-destructive" : "bg-warning";
   return <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${cls}`} aria-hidden />;
+}
+
+function LegendDot({ tone, label }: { tone: "success" | "warning" | "destructive"; label: string }) {
+  const cls =
+    tone === "success" ? "bg-success" : tone === "destructive" ? "bg-destructive" : "bg-warning";
+  return (
+    <span className="flex items-center gap-1.5">
+      <span className={`h-2.5 w-2.5 rounded-full ${cls}`} aria-hidden />
+      {label}
+    </span>
+  );
 }
