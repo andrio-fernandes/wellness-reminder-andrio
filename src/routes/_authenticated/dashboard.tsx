@@ -123,7 +123,7 @@ function Dashboard() {
               l.medicine_id === medicine.id &&
               new Date(l.scheduled_for).getTime() === scheduledFor.getTime(),
           );
-          if (log?.status === "taken" || log?.status === "skipped") return false;
+          if (log?.status === "taken") return false;
         }
         return true;
       })
