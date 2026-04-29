@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
-import { Pill, Plus, Check, AlertTriangle, Activity, Clock, Bell } from "lucide-react";
+import { Pill, Plus, Check, AlertTriangle, Activity, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -195,39 +195,6 @@ function Dashboard() {
       ? Math.round(weekData.reduce((s, d) => s + d.adherence, 0) / weekData.length)
       : 0;
 
-  const sendTestNotification = async () => {
-    if (typeof window === "undefined" || !("Notification" in window)) {
-      toast.error("This browser doesn't support notifications");
-      return;
-    }
-    let permission = Notification.permission;
-    if (permission === "default") {
-      permission = await Notification.requestPermission();
-    }
-    if (permission !== "granted") {
-      toast.error("Notifications are blocked. Enable them in your browser settings.");
-      return;
-    }
-
-    const title = nextSlot
-      ? `💊 Time for ${nextSlot.medicine.name}`
-      : "💊 WellnessReminder test";
-    const body = nextSlot
-      ? `${nextSlot.medicine.dosage} • due at ${formatTime(nextSlot.scheduledFor)}\nThis is a sample reminder.`
-      : "This is a sample reminder. Add a medicine to start receiving real reminders.";
-
-    const n = new Notification(title, {
-      body,
-      tag: "test-notification",
-      requireInteraction: false,
-    });
-    n.onclick = () => {
-      window.focus();
-      n.close();
-    };
-    toast.success("Test notification sent");
-  };
-
   const markTaken = async (slot: SlotItem) => {
     if (!user) return;
     if (slot.log) {
@@ -357,12 +324,6 @@ function Dashboard() {
               </div>
             </div>
           )}
-        </div>
-        <div className="mt-4 flex justify-end border-t pt-3">
-          <Button size="sm" variant="outline" onClick={sendTestNotification}>
-            <Bell className="mr-1.5 h-4 w-4" />
-            Test notification
-          </Button>
         </div>
       </section>
 
