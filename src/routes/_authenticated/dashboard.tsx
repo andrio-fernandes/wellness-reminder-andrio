@@ -252,6 +252,48 @@ function Dashboard() {
         />
       </div>
 
+      {/* Next upcoming dose */}
+      <section className="rounded-3xl border bg-gradient-to-br from-lavender/40 via-card to-card p-6 shadow-sm">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+            <Clock className="h-7 w-7" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Next dose
+            </div>
+            {nextSlot && nextMinutes !== null ? (
+              <>
+                <div className="mt-0.5 truncate text-xl font-semibold">
+                  {nextSlot.medicine.name}
+                  <span className="ml-2 text-sm font-normal text-muted-foreground">
+                    {nextSlot.medicine.dosage}
+                  </span>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {isToday ? "Today" : nextSlot.scheduledFor.toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" })}{" "}
+                  at {formatTime(nextSlot.scheduledFor)}
+                </div>
+              </>
+            ) : (
+              <div className="mt-0.5 text-base font-medium text-muted-foreground">
+                No upcoming doses scheduled
+              </div>
+            )}
+          </div>
+          {nextSlot && nextMinutes !== null && (
+            <div className="text-right">
+              <div className="text-2xl font-bold tabular-nums text-primary">
+                {formatCountdown(nextMinutes)}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {nextMinutes < 1 ? "It's time" : `${nextMinutes} minute${nextMinutes === 1 ? "" : "s"} away`}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Taken vs Missed comparison */}
       <section className="rounded-3xl border bg-card p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
