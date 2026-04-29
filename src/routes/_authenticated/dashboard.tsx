@@ -105,6 +105,53 @@ function Dashboard() {
   const missed = slots.filter((s) => s.log?.status === "missed").length;
   const pending = slots.length - taken - missed;
 
+  // Next upcoming dose across all medicines (look up to 7 days ahead)
+  let nextSlot: { medicine: Medicine; scheduledFor: Date } | null = null;
+  outer: for (let i = 0; i < 7; i++) {
+    const day = new Date(now);
+    day.setHours(0, 0, 0, 0);
+    day.setDate(day.getDate() + i);
+    const candidates = medicines
+      .flatMap((med) =>
+        getScheduledTimesForDay(med, day).map((scheduledFor) => ({ medicine: med, scheduledFor })),
+      )
+      .filter(({ medicine, scheduledFor }) => {
+        if (scheduledFor.getTime() <= now.getTime()) return false;
+        if (i === 0) {
+          const log = todayLogs.find(
+            (l) =>
+              l.medicine_id === medicine.id &&
+              new Date(l.scheduled_for).getTime() === scheduledFor.getTime(),
+          );
+          if (log?.status === "taken" || log?.status === "skipped") return false;
+        }
+        return true;
+      })
+      .sort((a, b) => a.scheduledFor.getTime() - b.scheduledFor.getTime());
+    if (candidates.length > 0) {
+      nextSlot = candidates[0];
+      break outer;
+    }
+  }
+
+  const nextMinutes = nextSlot
+    ? Math.max(0, Math.round((nextSlot.scheduledFor.getTime() - now.getTime()) / 60000))
+    : null;
+  const isToday =
+    nextSlot &&
+    nextSlot.scheduledFor.toDateString() === now.toDateString();
+
+  function formatCountdown(mins: number): string {
+    if (mins < 1) return "Due now";
+    if (mins < 60) return `in ${mins} min`;
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    if (h < 24) return m === 0 ? `in ${h} h` : `in ${h} h ${m} min`;
+    const d = Math.floor(h / 24);
+    const rh = h % 24;
+    return rh === 0 ? `in ${d} d` : `in ${d} d ${rh} h`;
+  }
+
   // Weekly adherence chart
   const weekData = Array.from({ length: 7 }).map((_, i) => {
     const day = new Date();
