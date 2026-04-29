@@ -452,15 +452,37 @@ function Dashboard() {
                       Taken
                     </span>
                   ) : status === "missed" ? (
-                    <span className="rounded-full bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive">
-                      <AlertTriangle className="mr-1 inline h-3 w-3" />
-                      Missed
-                    </span>
+                    <div className="flex flex-wrap items-center justify-end gap-2">
+                      <span className="rounded-full bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive">
+                        <AlertTriangle className="mr-1 inline h-3 w-3" />
+                        Missed
+                        {slot.log?.missed_reason
+                          ? ` · ${MISSED_REASON_LABELS[slot.log.missed_reason]}`
+                          : ""}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 px-2 text-xs"
+                        onClick={() => setMissedSlot(slot)}
+                      >
+                        {slot.log?.missed_reason ? "Change reason" : "Add reason"}
+                      </Button>
+                    </div>
                   ) : (
-                    <Button size="sm" onClick={() => markTaken(slot)}>
-                      <Check className="mr-1 h-3 w-3" />
-                      Mark taken
-                    </Button>
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" onClick={() => markTaken(slot)}>
+                        <Check className="mr-1 h-3 w-3" />
+                        Mark taken
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setMissedSlot(slot)}
+                      >
+                        Mark missed
+                      </Button>
+                    </div>
                   )}
                 </li>
               );
@@ -504,6 +526,39 @@ function Dashboard() {
           </p>
         )}
       </section>
+
+      <Dialog open={!!missedSlot} onOpenChange={(o) => !o && setMissedSlot(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Why was this dose missed?</DialogTitle>
+            <DialogDescription>
+              {missedSlot
+                ? `${missedSlot.medicine.name} · ${formatTime(missedSlot.scheduledFor)}`
+                : ""}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-2 py-2">
+            {(Object.keys(MISSED_REASON_LABELS) as MissedReason[]).map((reason) => {
+              const isCurrent = missedSlot?.log?.missed_reason === reason;
+              return (
+                <Button
+                  key={reason}
+                  variant={isCurrent ? "default" : "outline"}
+                  className="justify-start"
+                  onClick={() => missedSlot && markMissed(missedSlot, reason)}
+                >
+                  {MISSED_REASON_LABELS[reason]}
+                </Button>
+              );
+            })}
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setMissedSlot(null)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
