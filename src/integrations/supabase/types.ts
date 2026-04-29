@@ -14,7 +14,113 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      dose_logs: {
+        Row: {
+          created_at: string
+          email_sent_at: string | null
+          id: string
+          medicine_id: string
+          scheduled_for: string
+          status: Database["public"]["Enums"]["dose_status"]
+          taken_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_sent_at?: string | null
+          id?: string
+          medicine_id: string
+          scheduled_for: string
+          status?: Database["public"]["Enums"]["dose_status"]
+          taken_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_sent_at?: string | null
+          id?: string
+          medicine_id?: string
+          scheduled_for?: string
+          status?: Database["public"]["Enums"]["dose_status"]
+          taken_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dose_logs_medicine_id_fkey"
+            columns: ["medicine_id"]
+            isOneToOne: false
+            referencedRelation: "medicines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medicines: {
+        Row: {
+          active: boolean
+          created_at: string
+          dosage: string
+          end_date: string | null
+          frequency_config: Json
+          frequency_type: Database["public"]["Enums"]["frequency_type"]
+          id: string
+          name: string
+          notes: string | null
+          start_date: string
+          times: string[]
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          dosage: string
+          end_date?: string | null
+          frequency_config?: Json
+          frequency_type?: Database["public"]["Enums"]["frequency_type"]
+          id?: string
+          name: string
+          notes?: string | null
+          start_date?: string
+          times?: string[]
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          dosage?: string
+          end_date?: string | null
+          frequency_config?: Json
+          frequency_type?: Database["public"]["Enums"]["frequency_type"]
+          id?: string
+          name?: string
+          notes?: string | null
+          start_date?: string
+          times?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          email_reminders_enabled: boolean
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          email_reminders_enabled?: boolean
+          id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          email_reminders_enabled?: boolean
+          id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +129,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      dose_status: "pending" | "taken" | "missed" | "snoozed"
+      frequency_type: "daily" | "alternate" | "weekdays" | "interval"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +257,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      dose_status: ["pending", "taken", "missed", "snoozed"],
+      frequency_type: ["daily", "alternate", "weekdays", "interval"],
+    },
   },
 } as const
