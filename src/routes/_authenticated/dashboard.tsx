@@ -225,9 +225,9 @@ function Dashboard() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       <div className="animate-rise-in">
-        <h1 className="text-4xl font-bold tracking-tight text-gradient-primary">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gradient-primary">
           Dashboard
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -282,14 +282,14 @@ function Dashboard() {
       </div>
 
       {/* Next upcoming dose */}
-      <section className="card-hover animate-rise-in rounded-3xl border bg-gradient-to-br from-lavender/40 via-card to-card p-6 shadow-sm">
-        <div className="flex flex-wrap items-center gap-4">
+      <section className="card-hover animate-rise-in rounded-3xl border bg-gradient-to-br from-lavender/40 via-card to-card p-4 sm:p-6 shadow-sm">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <div
-            className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary ${
+            className={`flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-primary ${
               nextMinutes !== null && nextMinutes <= 5 ? "animate-pulse-ring" : "animate-float-slow"
             }`}
           >
-            <Clock className="h-7 w-7" />
+            <Clock className="h-6 w-6 sm:h-7 sm:w-7" />
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -297,14 +297,14 @@ function Dashboard() {
             </div>
             {nextSlot && nextMinutes !== null ? (
               <>
-                <div className="mt-0.5 truncate text-xl font-semibold">
+                <div className="mt-0.5 truncate text-lg sm:text-xl font-semibold">
                   {nextSlot.medicine.name}
                   <span className="ml-2 text-sm font-normal text-muted-foreground">
                     {nextSlot.medicine.dosage}
                   </span>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  {isToday ? "Today" : nextSlot.scheduledFor.toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" })}{" "}
+                <div className="text-xs sm:text-sm text-muted-foreground">
+                  {isToday ? "Today" : nextSlot.scheduledFor.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })}{" "}
                   at {formatTime(nextSlot.scheduledFor)}
                 </div>
               </>
@@ -315,8 +315,8 @@ function Dashboard() {
             )}
           </div>
           {nextSlot && nextMinutes !== null && (
-            <div className="text-right">
-              <div className="text-2xl font-bold tabular-nums text-primary">
+            <div className="w-full sm:w-auto sm:text-right">
+              <div className="text-xl sm:text-2xl font-bold tabular-nums text-primary">
                 {formatCountdown(nextMinutes)}
               </div>
               <div className="text-xs text-muted-foreground">
@@ -328,10 +328,10 @@ function Dashboard() {
       </section>
 
       {/* Taken vs Missed comparison */}
-      <section className="card-hover rounded-3xl border bg-card p-6 shadow-sm">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold">Today's progress</h2>
+      <section className="card-hover rounded-3xl border bg-card p-4 sm:p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="text-lg sm:text-xl font-semibold">Today's progress</h2>
             <p className="text-sm text-muted-foreground">
               {taken} of {slots.length} doses taken
             </p>
@@ -366,13 +366,14 @@ function Dashboard() {
       </section>
 
       {/* Today's schedule */}
-      <section className="card-hover rounded-3xl border bg-card p-6 shadow-sm">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Today's schedule</h2>
+      <section className="card-hover rounded-3xl border bg-card p-4 sm:p-6 shadow-sm">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-lg sm:text-xl font-semibold">Today's schedule</h2>
           <Button asChild size="sm" variant="outline">
             <Link to="/medicines">
               <Plus className="mr-1 h-4 w-4" />
-              Add medicine
+              <span className="hidden xs:inline">Add medicine</span>
+              <span className="xs:hidden">Add</span>
             </Link>
           </Button>
         </div>
@@ -434,8 +435,8 @@ function Dashboard() {
       </section>
 
       {/* Weekly adherence chart */}
-      <section className="card-hover rounded-3xl border bg-card p-6 shadow-sm">
-        <h2 className="mb-1 text-xl font-semibold">Weekly adherence</h2>
+      <section className="card-hover rounded-3xl border bg-card p-4 sm:p-6 shadow-sm">
+        <h2 className="mb-1 text-lg sm:text-xl font-semibold">Weekly adherence</h2>
         <p className="mb-4 text-sm text-muted-foreground">
           Doses taken on time over the last 7 days.
         </p>
@@ -496,14 +497,14 @@ function StatCard({
             ? "bg-lavender/30 text-lavender-foreground"
             : "bg-secondary text-primary";
   return (
-    <div className="card-hover rounded-3xl border bg-card p-5 shadow-sm">
+    <div className="card-hover rounded-3xl border bg-card p-4 sm:p-5 shadow-sm">
       <div className="flex items-center gap-3">
-        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${toneClass}`}>
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${toneClass}`}>
           <Icon className="h-5 w-5" />
         </div>
         <div className="min-w-0">
-          <div className="text-xs text-muted-foreground">{label}</div>
-          <div className="text-2xl font-bold">{value}</div>
+          <div className="truncate text-xs text-muted-foreground">{label}</div>
+          <div className="text-xl sm:text-2xl font-bold">{value}</div>
         </div>
       </div>
       {hint && <div className="mt-2 text-xs text-muted-foreground">{hint}</div>}
